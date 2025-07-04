@@ -1,0 +1,42 @@
+# .github/workflows/auto-approve.yml
+
+name: Auto Approve Firebase Transactions
+
+on:
+  # Schedule the workflow to run every 5 minutes
+  schedule:
+    - cron: '*/5 * * * *' # This cron expression means "at every 5th minute"
+  # Allow manual triggering of the workflow from the GitHub Actions UI
+  workflow_dispatch:
+
+jobs:
+  auto_approve:
+    runs-on: ubuntu-latest # Use the latest Ubuntu runner
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4 # Action to checkout your repository code
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.x' # Use the latest Python 3 version
+
+    - name: Install Firebase Admin SDK
+      run: pip install firebase-admin # Install the required Python package
+
+    - name: Create Firebase Service Account Key File
+      # This step creates the serviceAccountKey.json file from the GitHub Secret.
+      # The content of FIREBASE_SERVICE_ACCOUNT_KEY secret is written to the file.
+      # This is how your Python script gets access to the credentials securely.
+      run: echo "${{ secrets.FIREBASE_SERVICE_ACCOUNT_KEY }}" > serviceAccountKey.json
+
+    - name: Run Auto Approval Script
+      # Execute your Python script. Adjust the path if your script is in a subdirectory.
+      # For example, if your script is in 'scripts/auto_approver.py', change this to 'python scripts/auto_approver.py'
+      run: python auto_approver.py
+
+    - name: Clean up Service Account Key File
+      # Optional but good practice: remove the sensitive file after use
+      if: always() # Ensure this step runs even if previous steps fail
+      run: rm serviceAccountKey.json
