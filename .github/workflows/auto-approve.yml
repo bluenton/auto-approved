@@ -3,9 +3,9 @@
 name: Auto Approve Firebase Transactions
 
 on:
-  # Schedule the workflow to run every 5 minutes
+  # Schedule the workflow to run every minute for near-instant approval
   schedule:
-    - cron: '*/5 * * * *' # This cron expression means "at every 5th minute"
+    - cron: '*/1 * * * *' # This cron expression means "at every minute"
   # Allow manual triggering of the workflow from the GitHub Actions UI
   workflow_dispatch:
 
